@@ -73,7 +73,7 @@ ts() {
 }
 
 ts_up() {
-  $TS_BIN up --accept-routes --qr
+  $TS_BIN up --qr
 }
 
 ts_start() {
