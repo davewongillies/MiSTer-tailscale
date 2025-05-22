@@ -4,7 +4,7 @@ set -eo pipefail
 
 SCRIPTS_PATH=/media/fat/Scripts
 TS_INSTALL_PATH=${SCRIPTS_PATH}/.config/tailscale
-TS_VERSION="1.82.0"
+TS_VERSION="1.84.0"
 TS_ARCH="arm"
 TS_ARTIFACT="tailscale_${TS_VERSION}_${TS_ARCH}.tgz"
 TS_PKG_SRV="https://pkgs.tailscale.com/stable"
