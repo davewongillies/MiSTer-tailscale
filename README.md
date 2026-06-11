@@ -6,7 +6,7 @@
 
 A script and menu system for running Tailscale on your MiSTer.
 
-![Screenshot of MiSTer-tailscale menu](screenshot.png)
+![Screenshot of MiSTer-tailscale menu](./.github/screenshot.png)
 
 ## Prerequisites
 
