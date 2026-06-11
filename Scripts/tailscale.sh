@@ -4,7 +4,7 @@ set -eo pipefail
 
 SCRIPTS_PATH=/media/fat/Scripts
 TS_INSTALL_PATH=${SCRIPTS_PATH}/.config/tailscale
-TS_VERSION="1.84.0"
+TS_VERSION="1.98.5"
 TS_ARCH="arm"
 TS_ARTIFACT="tailscale_${TS_VERSION}_${TS_ARCH}.tgz"
 TS_PKG_SRV="https://pkgs.tailscale.com/stable"
@@ -199,8 +199,16 @@ ts_cmd() {
       ts_restart
       ;;
     update)
+      RO_ROOT="false"
+      if mount | grep "on / .*[(,]ro[,$]" -q ; then
+          RO_ROOT="true"
+      fi
+      [ "${RO_ROOT}" == "true" ] && mount / -o remount,rw
+
       $TS_BIN update --yes
       ts_restart
+
+      [ "${RO_ROOT}" == "true" ] && sleep 5; sync; mount / -o remount,ro
       ;;
     dns)
       $TS_BIN dns status;;
