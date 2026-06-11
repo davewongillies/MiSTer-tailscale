@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="128" height="128" src="./.github/tailscale_logo.png">
+</p>
+
 # MiSTer-tailscale
 
 A script and menu system for running Tailscale on your MiSTer.
