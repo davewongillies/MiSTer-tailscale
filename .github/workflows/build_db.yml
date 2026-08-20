@@ -4,23 +4,34 @@ on:
   push:
     branches:
       - master
+    paths:
+      - Scripts/tailscale.sh
   workflow_dispatch:
 
-permissions: write-all
+permissions:
+  contents: write
+
+concurrency:
+  group: build-db-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build_db:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install apt-get utilities
-      run: sudo apt-get install sharutils
+      - uses: actions/checkout@v7
 
-    - uses: actions/checkout@v2
+      - name: Install apt utilities
+        run: sudo apt update && sudo apt install -y sharutils
 
-    - name: Build Custom Database for MiSTer Downloader
-      run: set -o pipefail && curl --fail --location https://raw.githubusercontent.com/theypsilon/Downloader_DB-Template_MiSTer/main/.github/build_db.py | python3 -
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        DB_ID: davewongillies/tailscale
-        FINDER_IGNORE: screenshot.png
+      - name: Build Custom Database for MiSTer Downloader
+        run: |
+          set -euo pipefail
+          curl --fail --location \
+            https://raw.githubusercontent.com/theypsilon/Downloader_DB-Template_MiSTer/main/.github/build_db.py \
+            | python3 -
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DB_ID: davewongillies/tailscale
+          FINDER_IGNORE: screenshot.png renovate.json5
