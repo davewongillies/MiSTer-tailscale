@@ -10,10 +10,12 @@ TS_ARTIFACT="tailscale_${TS_VERSION}_${TS_ARCH}.tgz"
 TS_PKG_SRV="https://pkgs.tailscale.com/stable"
 TS_BIN=${TS_INSTALL_PATH}/tailscale
 
+# shellcheck source=/dev/null
 [ -f ${TS_INSTALL_PATH}/tailscaled.ini ] && source ${TS_INSTALL_PATH}/tailscaled.ini
 
 SCRIPT_INI=${SCRIPTS_PATH}/tailscale.ini
 
+# shellcheck source=/dev/null
 [ -f ${SCRIPT_INI} ] && source ${SCRIPT_INI}
 
 ini_get() {
@@ -25,7 +27,7 @@ ini_get() {
 ini_set() {
   ! [ -f ${SCRIPT_INI} ] && touch ${SCRIPT_INI}
 
-  val="$(ini_get ${1} ${2})"
+  val="$(ini_get "${1}" "${2}")"
 
   if [[ -z "${val}" ]]; then
     echo "${1}=${2}" >> ${SCRIPT_INI}
@@ -33,11 +35,13 @@ ini_set() {
     sed -i -e "s!${1}=.*!${1}=${2}!g" ${SCRIPT_INI}
   fi
 
+  # shellcheck source=/dev/null
   source ${SCRIPT_INI}
 }
 
 is_running_from_menu() {
-  if ps -o args|grep -q "^{script} /bin/bash /tmp/script -f root$" && ps -o args|grep -q "^bash /media/fat/Scripts/$(basename $0)$"; then
+  # shellcheck disable=SC2009 # matching exact ps output format, pgrep can't express this pattern
+  if ps -o args|grep -q "^{script} /bin/bash /tmp/script -f root$" && ps -o args|grep -q "^bash /media/fat/Scripts/$(basename "$0")$"; then
     return 0
   else
     return 1
@@ -47,6 +51,7 @@ is_running_from_menu() {
 ts() {
   if ! grep -q "# davewongillies/tailscale" /media/fat/linux/user-startup.sh ; then
     echo Adding tailscale.sh to user-startup.sh
+    # shellcheck disable=SC2016 # $1 must stay literal; it's expanded later when user-startup.sh runs this line
     echo '
 # davewongillies/tailscale
 [[ -e /media/fat/Scripts/tailscale.sh ]] && /media/fat/Scripts/tailscale.sh $1 &' >> /media/fat/linux/user-startup.sh
@@ -68,7 +73,7 @@ ts() {
     ts_start && ts_up && $TS_BIN status
 
   else
-    $TS_BIN $*
+    $TS_BIN "$@"
   fi
 }
 
@@ -119,12 +124,12 @@ main() {
   if is_running_from_menu; then
     while true; do
       # Define the dialog exit status codes
-      : ${DIALOG_OK=0}
-      : ${DIALOG_CANCEL=1}
-      : ${DIALOG_HELP=2}
-      : ${DIALOG_EXTRA=3}
-      : ${DIALOG_ITEM_HELP=4}
-      : ${DIALOG_ESC=255}
+      : "${DIALOG_OK=0}"
+      : "${DIALOG_CANCEL=1}"
+      : "${DIALOG_HELP=2}"
+      : "${DIALOG_EXTRA=3}"
+      : "${DIALOG_ITEM_HELP=4}"
+      : "${DIALOG_ESC=255}"
 
       # Duplicate (make a backup copy of) file descriptor 1
       # on descriptor 3
@@ -163,16 +168,16 @@ main() {
 
       # Act on the exit status
       case $return_value in
-        $DIALOG_OK)
-          echo Running tailscale command $result...
-          ts_cmd $result
+        "$DIALOG_OK")
+          echo "Running tailscale command $result..."
+          ts_cmd "$result"
           echo "Press any key to continue..."
-          read -n 1 -s
+          read -rn 1 -s
           ;;
       esac
     done
   else
-    ts_cmd $*
+    ts_cmd "$@"
   fi
 }
 
@@ -216,9 +221,9 @@ ts_cmd() {
       ts_autoconnect_toggle
       ;;
     *)
-      ts $result
+      ts "$result"
       ;;
   esac
 }
 
-main $1
+main "$1"
