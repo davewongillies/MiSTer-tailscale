@@ -1,0 +1,20 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "labels": ["renovate"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Bump the pinned Tailscale release used by Scripts/tailscale.sh",
+      "managerFilePatterns": ["/^Scripts/tailscale\\.sh$/"],
+      "matchStrings": [
+        "TS_VERSION=\"(?<currentValue>.*?)\""
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "tailscale/tailscale",
+      "extractVersionTemplate": "^v(?<version>.*)$"
+    }
+  ]
+}
