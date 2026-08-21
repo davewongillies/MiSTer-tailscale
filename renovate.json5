@@ -4,6 +4,15 @@
     "config:recommended"
   ],
   "labels": ["renovate"],
+  "platformAutomerge": true,
+  "packageRules": [
+    {
+      "matchFileNames": ["Scripts/tailscale.sh"],
+      "automerge": true,
+      "automergeType": "pr",
+      "automergeStrategy": "squash"
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
